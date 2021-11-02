@@ -1,0 +1,10 @@
+Account
+--------
+email: sahoy15055@d3ff.com
+username: uncomprehensivebelt
+password: uW7P2]sqe8D&!sjJ
+
+API
+----
+ID: in2HuqFUZl3aGRhZoJQz3Q
+Secret key: Dl9iHhXbipTIyQjnydqtwqtirErOhw
