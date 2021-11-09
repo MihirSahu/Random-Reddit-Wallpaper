@@ -14,8 +14,11 @@ reddit = praw.Reddit(
     password="uW7P2]sqe8D&!sjJ",
 )
 
-# Specify subreddit to target
-subreddit = reddit.subreddit("wallpapers")
+# Specify subreddit
+sub = "wallpapers"
+
+# Create instance of subreddit with specified sub
+subreddit = reddit.subreddit(sub)
 
 # Generate random number
 randomNum = random.randrange(0, 51)
