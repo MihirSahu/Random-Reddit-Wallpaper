@@ -4,6 +4,7 @@ import os
 import urllib.request
 import praw
 import random
+import imagesize
 
 # Function to check connection with reddit
 def connect(host='https://www.reddit.com'):
@@ -60,9 +61,11 @@ if (connect()):
     # Download image from url
     urllib.request.urlretrieve(imgUrl, f"/home/theonlyonzz/Pictures/reddit_wallpapers/{imgName}")
 
-    # Set wallpaper using feh utility on linux
-    if sub == "animewallpaper":
-        # Add this special case because r/animewallpaper has a vast majority of vertical wallpapers
+    # Compare image width and height to determine whether it's a vertical or horizontal wallpaper, and then set the wallpaper using feh utility on linux
+    # Find width and height
+    width, height = imagesize.get(f"/home/theonlyonzz/Pictures/reddit_wallpapers/{imgName}")
+    # Set wallpaper
+    if height > width:
         os.system(f"feh --bg-max /home/theonlyonzz/Pictures/reddit_wallpapers/{imgName}")
     else:
         os.system(f"feh --bg-fill /home/theonlyonzz/Pictures/reddit_wallpapers/{imgName}")
@@ -76,4 +79,11 @@ else:
 
     # Choose a random number from the number of files in the directory
     randomNum = random.randrange(0, len(imgList))
-    os.system(f"feh --bg-fill /home/theonlyonzz/Pictures/reddit_wallpapers/{imgList[randomNum]}")
+
+    # Find width and height
+    width, height = imagesize.get(f"/home/theonlyonzz/Pictures/reddit_wallpapers/{imgList[randomNum]}")
+
+    if height > width:
+        os.system(f"feh --bg-max /home/theonlyonzz/Pictures/reddit_wallpapers/{imgList[randomNum]}")
+    else:
+        os.system(f"feh --bg-fill /home/theonlyonzz/Pictures/reddit_wallpapers/{imgList[randomNum]}")
