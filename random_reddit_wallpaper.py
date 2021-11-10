@@ -5,42 +5,75 @@ import urllib.request
 import praw
 import random
 
-# Create Reddit instance
-reddit = praw.Reddit(
-    user_agent="Comment Extraction (by u/USERNAME)",
-    client_id="in2HuqFUZl3aGRhZoJQz3Q",
-    client_secret="Dl9iHhXbipTIyQjnydqtwqtirErOhw",
-    username="uncomprehensivebelt",
-    password="uW7P2]sqe8D&!sjJ",
-)
+# Function to check connection with reddit
+def connect(host='https://www.reddit.com'):
+    try:
+        urllib.request.urlopen(host, timeout=6) #Python 3.x
+        return True
+    except:
+        return False
 
-# Specify subreddit
-sub = "wallpapers"
+if (connect()):
+    # Create Reddit instance
+    reddit = praw.Reddit(
+        user_agent="Comment Extraction (by u/USERNAME)",
+        client_id="in2HuqFUZl3aGRhZoJQz3Q",
+        client_secret="Dl9iHhXbipTIyQjnydqtwqtirErOhw",
+        username="uncomprehensivebelt",
+        password="uW7P2]sqe8D&!sjJ",
+    )
 
-# Create instance of subreddit with specified sub
-subreddit = reddit.subreddit(sub)
+    # List of subreddits you want to get wallpapers from
+    subList = ["wallpapers", "wallpaper", "animewallpaper"]
 
-# Generate random number
-randomNum = random.randrange(0, 51)
+    randomNum = random.randrange(0, len(subList))
 
-# Get 50 hot submissions from subreddit, add urls to a list, and select the nth one depending on randomNum. Save the url of the image to a variable
-urlList = []
-for submission in subreddit.hot(limit=50):
-    urlList.append(submission.url)
-imgUrl = urlList[randomNum]
+    # Specify subreddit
+    sub = subList[randomNum]
 
-# Detect name of image from url and save to variable
-imgName = ""
-temp = list(imgUrl)
-temp.reverse()
-for idx, i in enumerate(temp):
-    if i == '/':
-        temp = temp[:idx]
+    # Create instance of subreddit with specified sub
+    subreddit = reddit.subreddit(sub)
+
+    # Get 50 hot submissions from subreddit and add urls to a list
+    urlList = []
+    for submission in subreddit.hot(limit=50):
+        urlList.append(submission.url)
+
+    # Detect name of file from url and save to variable. If file name does not end with .png or .jpg, choose another random number and repeat process until an image comes up
+    imgName = ""
+    while ((imgName[-4:] != ".png") and (imgName[-4:] != ".jpg")):
+
+        # Generate random number
+        randomNum = random.randrange(0, 50)
+
+        imgUrl = urlList[randomNum]
+
+        temp = list(imgUrl)
         temp.reverse()
-        imgName = "".join(temp)
+        for idx, i in enumerate(temp):
+            if i == '/':
+                temp = temp[:idx]
+                temp.reverse()
+                imgName = "".join(temp)
 
-# Download image from url
-urllib.request.urlretrieve(imgUrl, f"/home/theonlyonzz/Pictures/reddit_wallpapers/{imgName}")
 
-# Set wallpaper using feh utility on linux
-os.system(f"feh --bg-fill ~/Pictures/reddit_wallpapers/{imgName}")
+    # Download image from url
+    urllib.request.urlretrieve(imgUrl, f"/home/theonlyonzz/Pictures/reddit_wallpapers/{imgName}")
+
+    # Set wallpaper using feh utility on linux
+    if sub == "animewallpaper":
+        # Add this special case because r/animewallpaper has a vast majority of vertical wallpapers
+        os.system(f"feh --bg-max /home/theonlyonzz/Pictures/reddit_wallpapers/{imgName}")
+    else:
+        os.system(f"feh --bg-fill /home/theonlyonzz/Pictures/reddit_wallpapers/{imgName}")
+
+else:
+    # Change directory to wallpaper folder
+    os.chdir("/home/theonlyonzz/Pictures/reddit_wallpapers/")
+
+    # Make list of files in directory
+    imgList = [name for name in os.listdir('.') if os.path.isfile(name)]
+
+    # Choose a random number from the number of files in the directory
+    randomNum = random.randrange(0, len(imgList))
+    os.system(f"feh --bg-fill /home/theonlyonzz/Pictures/reddit_wallpapers/{imgList[randomNum]}")
